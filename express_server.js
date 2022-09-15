@@ -51,15 +51,24 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+
 app.get("/urls/:id", (req, res) => {
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id]};
-  res.render("urls_show", templateVars);
+  res.render("urls_edit", templateVars);
 });
 
+
 //removes id from urlDatabase and redirects back to /urls
-app.get("/urls/:id/delete", (req, res) => {
+app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.params.id];
   res.redirect("/urls");
+});
+
+app.post("/urls/:id/edit", (req, res) => {
+
+  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id]};
+  res.render("urls_show", templateVars);
+
 });
 
 app.listen(PORT, () => {
