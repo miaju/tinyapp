@@ -57,6 +57,11 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+app.post("/urls/:id", (req, res) => {
+  const { longURL } = req.body;
+  urlDatabase[req.params.id] = longURL;
+  res.redirect("/urls");
+});
 
 //removes id from urlDatabase and redirects back to /urls
 app.post("/urls/:id/delete", (req, res) => {
