@@ -34,7 +34,7 @@
               <td><%= id %></td>
               <td><%= urls[id] %></td>
               <td>
-                <form method="POST" action="/urls/<%= id %>/delete">
+                <form method="POST" onclick="location.href='/urls/<%= id %>/delete'">
                   <button type="button" class="btn btn-outline-danger">Delete</button>
                 </form>
               </td>

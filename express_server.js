@@ -27,10 +27,19 @@ app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
+
+// redirects to long url that has id of id
 app.get("/u/:id", (req, res) => {
   res.redirect(urlDatabase[req.params.id]);
 });
 
+
+app.get("/urls", (req, res) => {
+  const templateVars = { urls: urlDatabase };
+  res.render("urls_index", templateVars);
+});
+
+// adds submitted url to urlDatabase with id randomly generated alphanumeric string
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
   const short = generateRandomString();
@@ -47,11 +56,12 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+//removes id from urlDatabase and redirects back to /urls
+app.get("/urls/:id/delete", (req, res) => {
+  delete urlDatabase[req.params.id];
+  res.redirect("/urls");
 });
 
-app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
-  res.render("urls_index", templateVars);
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}!`);
 });
