@@ -27,6 +27,10 @@ app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
+app.get("/u/:id", (req, res) => {
+  res.redirect(urlDatabase[req.params.id]);
+});
+
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
   const short = generateRandomString();
