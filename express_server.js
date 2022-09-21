@@ -1,6 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const cookieParser = require('cookie-parser');
+const res = require("express/lib/response");
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -61,6 +62,7 @@ app.get("/urls/new", (req, res) => {
   const templateVars = {
     username: req.cookies["username"],
   };
+
   res.render("urls_new", templateVars);
 });
 
@@ -107,10 +109,17 @@ app.post("/login", (req, res) => {
   res.redirect("/urls");
 });
 
-//
+//clears the username cookie and redirects back to /urls
 app.post("/logout", (req, res) => {
   res.clearCookie("username");
   res.redirect("/urls");
+});
+
+app.get("/register", (req, res) => {
+  const templateVars = {
+    username: req.cookies["username"],
+  };
+  res.render("urls_register", templateVars);
 });
 
 app.listen(PORT, () => {
