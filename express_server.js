@@ -130,13 +130,17 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const {email, password} = req.body;
   const id = generateRandomString();
+
+  if (!email || !password) {
+    return res.status(400).send("Email or password cannot be blank");
+  }
+
   userDatabase[id] = {
     id,
     email,
     password
   };
   res.cookie("user_id", id);
-  console.log(userDatabase[id]);
   res.redirect("/urls");
 });
 
