@@ -39,7 +39,7 @@ app.get("/u/:id", (req, res) => {
 
 
 app.get("/urls", (req, res) => {
-  
+
   const templateVars = {
     urls: urlDatabase,
     username: req.cookies["username"]
@@ -104,6 +104,12 @@ app.post("/urls/:id/edit", (req, res) => {
 app.post("/login", (req, res) => {
   const { username } = req.body;
   res.cookie("username", username);
+  res.redirect("/urls");
+});
+
+//
+app.post("/logout", (req, res) => {
+  res.clearCookie("username");
   res.redirect("/urls");
 });
 
