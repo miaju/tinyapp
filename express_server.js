@@ -70,7 +70,14 @@ app.get("/urls", (req, res) => {
 
 // redirects to long url that has id of id
 app.get("/u/:id", (req, res) => {
-  res.redirect(urlDatabase[req.params.id]);
+
+  if (!urlDatabase[req.params.id]) {
+    return res.status(404).send("URL id not found");
+
+  } else {
+    res.redirect(urlDatabase[req.params.id]);
+  }
+  
 });
 
 
@@ -99,7 +106,14 @@ app.get("/urls/:id", (req, res) => {
     user: userDatabase[req.cookies["user_id"]]
   };
 
-  res.render("urls_show", templateVars);
+  if (!urlDatabase[req.params.id]) {
+    return res.status(404).send("URL id not found");
+    
+  } else {
+    res.render("urls_show", templateVars);
+
+  }
+
 });
 
 app.get("/:id/edit", (req, res) => {
@@ -110,7 +124,17 @@ app.get("/:id/edit", (req, res) => {
     user: userDatabase[req.cookies["user_id"]]
   };
 
-  res.render("urls_edit", templateVars);
+  if (!urlDatabase[req.params.id]) {
+    return res.status(404).send("URL id not found");
+    
+  } else if (!templateVars.user) {
+
+    return res.status(401).send("Unathourized to do this action, please log in");
+    
+  } else {
+    res.render("urls_edit", templateVars);
+
+  }
 });
 
 app.get("/login", (req, res) => {
@@ -136,7 +160,7 @@ app.get("/register", (req, res) => {
 
   if (templateVars.user) {
     res.redirect("/urls");
-    
+
   } else {
     res.render("register", templateVars);
 
@@ -151,9 +175,15 @@ app.get("/register", (req, res) => {
 // adds submitted url to urlDatabase with id randomly generated alphanumeric string
 app.post("/urls", (req, res) => {
 
-  const short = generateRandomString();
-  urlDatabase[short] = req.body.longURL;
-  res.redirect(`/urls/${short}`); // redirect to /urls/:id
+  if (!req.cookies["user_id"]) {
+    return res.status(401).send("Unathourized to do this action, please log in");
+
+  } else {
+    const short = generateRandomString();
+    urlDatabase[short] = req.body.longURL;
+
+    res.redirect(`/urls/${short}`); // redirect to /urls/:id
+  }
 });
 
 
@@ -180,9 +210,14 @@ app.post("/urls/:id/edit", (req, res) => {
     longURL: urlDatabase[req.params.id],
     user: userDatabase[req.cookies["user_id"]]
   };
+  if (!templateVars.user) {
+    return res.status(401).send("Unathourized to do this action, please log in");
+    
+  } else {
+    res.render("urls_edit", templateVars);
 
-  res.render("urls_edit", templateVars);
-
+  }
+ 
 });
 
 
