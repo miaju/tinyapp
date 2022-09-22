@@ -17,8 +17,14 @@ app.use(cookieParser());
 app.set("view engine", "ejs");
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca",
+    userId: "pmade"
+  },
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    userId: "pmade"
+  }
 };
 
 const userDatabase = {};
@@ -75,7 +81,7 @@ app.get("/u/:id", (req, res) => {
     return res.status(404).send("URL id not found");
 
   } else {
-    res.redirect(urlDatabase[req.params.id]);
+    res.redirect(urlDatabase[req.params.id].longURL);
   }
   
 });
@@ -102,7 +108,7 @@ app.get("/urls/:id", (req, res) => {
 
   const templateVars = {
     id: req.params.id,
-    longURL: urlDatabase[req.params.id],
+    longURL: urlDatabase[req.params.id].longURL,
     user: userDatabase[req.cookies["user_id"]]
   };
 
@@ -116,11 +122,11 @@ app.get("/urls/:id", (req, res) => {
 
 });
 
-app.get("/:id/edit", (req, res) => {
+app.get("/urls/:id/edit", (req, res) => {
 
   const templateVars = {
     id: req.params.id,
-    longURL: urlDatabase[req.params.id],
+    longURL: urlDatabase[req.params.id].longURL,
     user: userDatabase[req.cookies["user_id"]]
   };
 
@@ -180,8 +186,11 @@ app.post("/urls", (req, res) => {
 
   } else {
     const short = generateRandomString();
-    urlDatabase[short] = req.body.longURL;
-
+    urlDatabase[short] = {
+      longURL: req.body.longURL,
+      userId: req.cookies["user_id"]
+    };
+    
     res.redirect(`/urls/${short}`); // redirect to /urls/:id
   }
 });
@@ -190,8 +199,19 @@ app.post("/urls", (req, res) => {
 // adds the id and url to the urlDatabase and redirects back to /urls
 app.post("/urls/:id", (req, res) => {
   const { longURL } = req.body;
-  urlDatabase[req.params.id] = longURL;
-  res.redirect("/urls");
+
+  if (!req.cookies["user_id"]) {
+    return res.status(401).send("Unathourized to do this action, please log in");
+
+  } else {
+
+    urlDatabase[req.params.id] = {
+      longURL,
+      userId: req.cookies["user_id"]
+    };
+
+    res.redirect("/urls");
+  }
 });
 
 
@@ -207,12 +227,12 @@ app.post("/urls/:id/edit", (req, res) => {
 
   const templateVars = {
     id: req.params.id,
-    longURL: urlDatabase[req.params.id],
+    longURL: urlDatabase[req.params.id].longURL,
     user: userDatabase[req.cookies["user_id"]]
   };
   if (!templateVars.user) {
     return res.status(401).send("Unathourized to do this action, please log in");
-    
+
   } else {
     res.render("urls_edit", templateVars);
 
