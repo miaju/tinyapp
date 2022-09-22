@@ -56,11 +56,27 @@ const findUserByEmail = function(email) {
   return null;
 };
 
+const urlsForUser = function(id) {
+  let urls = {};
+
+  for (const url in urlDatabase) {
+    if (urlDatabase[url].user === id) {
+      urls[url] = urlDatabase[url];
+    }
+  }
+
+  return urls;
+};
+
 
 //--------------------------------------- APP.GET :
 
 app.get("/", (req, res) => {
-  res.send("Hello! This is a placeholder for a home page!");
+  const templateVars = {
+    user: userDatabase[req.cookies["user_id"]]
+  };
+
+  res.render("home", templateVars);
 });
 
 app.get("/urls", (req, res) => {
