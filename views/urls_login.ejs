@@ -15,12 +15,15 @@
     <%- include('partials/_header') %>
     <main style="margin: 1em;">
       <h3>Login</h3>
+      <p>Don't have an account? <a href="/register">Register here</a></p>
       <form method="POST" action="/login">
         <label>Email: </label>
+        <br />
         <input type="email" name="email" style="width: 300px; margin: 0.5em"/>
         <br />
     
         <label>Password: </label>
+        <br />
         <input type="password" name="password" style="width: 300px; margin: 0.5em"/>
         <br />
         <button type="submit" class="btn btn-primary">Login</button>

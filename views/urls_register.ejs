@@ -15,12 +15,15 @@
     <%- include('partials/_header') %>
     <main style="margin: 1em;">
       <h3>Register for TinyApp</h3>
+      <p>Have an account already? <a href="/login">Login here</a></p>
       <form method="POST" action="/register">
         <label>Enter an email: </label>
+        <br />
         <input type="email" name="email" style="width: 300px; margin: 0.5em"/>
         <br />
     
         <label>Enter a password: </label>
+        <br />
         <input type="password" name="password" style="width: 300px; margin: 0.5em"/>
         <br />
         <button type="submit" class="btn btn-primary">Register</button>
