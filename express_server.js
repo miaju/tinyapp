@@ -1,7 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const cookieParser = require('cookie-parser');
-const res = require("express/lib/response");
+
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -87,10 +87,22 @@ app.post("/urls/:id", (req, res) => {
   res.redirect("/urls");
 });
 
+
+
 //removes id from urlDatabase and redirects back to /urls
 app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.params.id];
   res.redirect("/urls");
+});
+
+app.get("/:id/edit", (req, res) => {
+  const templateVars = {
+    id: req.params.id,
+    longURL: urlDatabase[req.params.id],
+    user: userDatabase[req.cookies["user_id"]]
+  };
+
+  res.render("urls_edit", templateVars);
 });
 
 //changes the url assigned to the id to submitted url
