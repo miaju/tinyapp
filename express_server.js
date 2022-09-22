@@ -60,7 +60,7 @@ const urlsForUser = function(id) {
   let urls = {};
 
   for (const url in urlDatabase) {
-    if (urlDatabase[url].user === id) {
+    if (urlDatabase[url].userId === id) {
       urls[url] = urlDatabase[url];
     }
   }
@@ -81,12 +81,24 @@ app.get("/", (req, res) => {
 
 app.get("/urls", (req, res) => {
 
-  const templateVars = {
-    urls: urlDatabase,
-    user: userDatabase[req.cookies["user_id"]]
-  };
+  const userId = req.cookies["user_id"];
 
-  res.render("urls_index", templateVars);
+  if (!userId) {
+    return res.status(401).send("Unathorized to view this content, please login.");
+
+  } else {
+
+    const templateVars = {
+      urls: urlsForUser(userId),
+      user: userDatabase[userId]
+    };
+  
+    console.log(urlsForUser(userId));
+    res.render("urls_index", templateVars);
+
+  }
+
+  
 
 });
 
@@ -121,16 +133,19 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-
+  const userId = req.cookies["user_id"];
   const templateVars = {
     id: req.params.id,
     longURL: urlDatabase[req.params.id].longURL,
-    user: userDatabase[req.cookies["user_id"]]
+    user: userDatabase[userId ]
   };
 
   if (!urlDatabase[req.params.id]) {
     return res.status(404).send("URL id not found");
     
+  } else if (urlDatabase[req.params.id].userId !== userId) {
+    return res.status(401).send("Unathorized to view this content.");
+
   } else {
     res.render("urls_show", templateVars);
 
@@ -145,14 +160,12 @@ app.get("/urls/:id/edit", (req, res) => {
     longURL: urlDatabase[req.params.id].longURL,
     user: userDatabase[req.cookies["user_id"]]
   };
+  if (urlDatabase[req.params.id].userId !== req.cookies["user_id"]) {
+    return res.status(401).send("Unathourized to do this action.");
 
-  if (!urlDatabase[req.params.id]) {
+  } else if (!urlDatabase[req.params.id]) {
     return res.status(404).send("URL id not found");
-    
-  } else if (!templateVars.user) {
-
-    return res.status(401).send("Unathourized to do this action, please log in");
-    
+  
   } else {
     res.render("urls_edit", templateVars);
 
@@ -233,8 +246,16 @@ app.post("/urls/:id", (req, res) => {
 
 //removes id from urlDatabase and redirects back to /urls
 app.post("/urls/:id/delete", (req, res) => {
-  delete urlDatabase[req.params.id];
-  res.redirect("/urls");
+  if (urlDatabase[req.params.id].userId !== req.cookies["user_id"]) {
+    return res.status(401).send("Unathorized to do this action.");
+
+  } else {
+
+    delete urlDatabase[req.params.id];
+    res.redirect("/urls");
+
+  }
+
 });
 
 
@@ -246,8 +267,8 @@ app.post("/urls/:id/edit", (req, res) => {
     longURL: urlDatabase[req.params.id].longURL,
     user: userDatabase[req.cookies["user_id"]]
   };
-  if (!templateVars.user) {
-    return res.status(401).send("Unathourized to do this action, please log in");
+  if (urlDatabase[req.params.id].userId !== req.cookies["user_id"]) {
+    return res.status(401).send("Unathorized to do this action.");
 
   } else {
     res.render("urls_edit", templateVars);
@@ -275,7 +296,7 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
 
   res.clearCookie("user_id");
-  res.redirect("/urls");
+  res.redirect("/");
 
 });
 
