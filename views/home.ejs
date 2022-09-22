@@ -14,12 +14,18 @@
   <body>
     <%- include('partials/_header') %>
     <main style="margin: 1em;">
-     <h3>Welcome to TinyApp!</h3>
-     <h4>Please register for an account!!</h4>
-     <br />
-     <h5><a href="/register">Register here</a></h5>
-     <br />
-     <p>Have an account already? <a href="/login">Login here</a></p>
+      <h3>Welcome to TinyApp!</h3>
+      <% if (user){ %>
+        <p>Hello, <%= user.email %>!</p>
+        <p>To access your URLs, please go <a href="/urls">here.</a></p>
+        <p>To create a new URL, please go <a href="/urls/new">here.</a></p>
+      <% } else{ %>
+        <h4>Please register for an account!!</h4>
+        <br />
+        <h5><a href="/register">Register here</a></h5>
+        <br />
+        <p>Have an account already? <a href="/login">Login here</a></p>
+      <% } %>
     </main>
      
     <!-- Bootstrap JS -->
