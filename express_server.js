@@ -84,7 +84,7 @@ app.get("/urls", (req, res) => {
 
   const userId = req.cookies["user_id"];
 
-  if (!userId) {
+  if (!userDatabase[userId]) {
     return res.status(401).send("Unathorized to view this content, please login.");
 
   } else {
@@ -123,6 +123,7 @@ app.get("/urls/new", (req, res) => {
   };
   
   if (!templateVars.user) {
+    console.log(userDatabase[templateVars.user]);
     res.redirect("/login");
 
   } else {
@@ -138,7 +139,7 @@ app.get("/urls/:id", (req, res) => {
   const templateVars = {
     id: req.params.id,
     longURL: urlDatabase[req.params.id].longURL,
-    user: userDatabase[userId ]
+    user: userDatabase[userId]
   };
 
   if (!urlDatabase[req.params.id]) {
@@ -282,12 +283,13 @@ app.post("/urls/:id/edit", (req, res) => {
 //sets submitted username as the username cookie and redirects back to /urls
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
+  const user = findUserByEmail(email);
 
-  if ((!findUserByEmail(email)) || (findUserByEmail(email).password !== password)) {
+  if ((!user) || (!bcrypt.compare(user.password, password))) {
     return res.status(403).send("Invalid credentials");
   }
 
-  const userId = findUserByEmail(email).id;
+  const userId = user.id;
 
   res.cookie("user_id", userId);
   res.redirect("/urls");
@@ -306,7 +308,8 @@ app.post("/logout", (req, res) => {
 // if email or password fields left blank, sends status 400
 // if user with the given email exists, sends status 400
 app.post("/register", (req, res) => {
-  const {email, password} = req.body;
+  const {email} = req.body;
+  const password = bcrypt.hashSync(req.body.password, 10);
   const id = generateRandomString();
 
   if (!email || !password) {
