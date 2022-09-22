@@ -31,6 +31,16 @@ const generateRandomString = function() {
   return result;
 };
 
+const findUserByEmail = function(email) {
+  for (const user in userDatabase) {
+    if (userDatabase[user].email === email) {
+      return user;
+    }
+  }
+
+  return null;
+};
+
 
 app.get("/", (req, res) => {
   res.send("Hello! This is a placeholder");
@@ -142,9 +152,14 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const {email, password} = req.body;
   const id = generateRandomString();
+  console.log(userDatabase);
 
   if (!email || !password) {
     return res.status(400).send("Email or password cannot be blank");
+  }
+  console.log(findUserByEmail(email));
+  if (findUserByEmail(email)) {
+    return res.status(400).send("User with that email already exists");
   }
 
   userDatabase[id] = {
@@ -152,6 +167,7 @@ app.post("/register", (req, res) => {
     email,
     password
   };
+
   res.cookie("user_id", id);
   res.redirect("/urls");
 });
