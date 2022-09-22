@@ -110,6 +110,10 @@ app.get("/login", (req, res) => {
     user: userDatabase[req.cookies["user_id"]]
   };
 
+  if (templateVars.user) {
+    res.redirect("/urls");
+  }
+
   res.render("login", templateVars);
 });
 
@@ -117,6 +121,11 @@ app.get("/register", (req, res) => {
   const templateVars = {
     user: userDatabase[req.cookies["user_id"]]
   };
+
+  if (templateVars.user) {
+    res.redirect("/urls");
+  }
+
   res.render("register", templateVars);
 });
 
@@ -211,5 +220,5 @@ app.post("/register", (req, res) => {
 // -------------------------------------------------------------
 
 app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}!`);
+  console.log(`TinyApp listening on port ${PORT}!`);
 });
