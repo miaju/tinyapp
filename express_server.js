@@ -79,8 +79,16 @@ app.get("/urls/new", (req, res) => {
   const templateVars = {
     user: userDatabase[req.cookies["user_id"]],
   };
+  
+  if (!templateVars.user) {
+    res.redirect("/login");
 
-  res.render("urls_new", templateVars);
+  } else {
+    res.render("urls_new", templateVars);
+
+  }
+
+  
 });
 
 app.get("/urls/:id", (req, res) => {
@@ -112,9 +120,13 @@ app.get("/login", (req, res) => {
 
   if (templateVars.user) {
     res.redirect("/urls");
+
+  } else {
+    res.render("login", templateVars);
+
   }
 
-  res.render("login", templateVars);
+  
 });
 
 app.get("/register", (req, res) => {
@@ -124,9 +136,13 @@ app.get("/register", (req, res) => {
 
   if (templateVars.user) {
     res.redirect("/urls");
+    
+  } else {
+    res.render("register", templateVars);
+
   }
 
-  res.render("register", templateVars);
+  
 });
 
 //--------------------------------------------- APP.POST:
