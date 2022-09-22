@@ -128,6 +128,14 @@ app.post("/urls/:id/edit", (req, res) => {
 
 });
 
+app.get("/login", (req, res) => {
+  const templateVars = {
+    user: userDatabase[req.cookies["user_id"]]
+  };
+
+  res.render("urls_login", templateVars);
+});
+
 //sets submitted username as the username cookie and redirects back to /urls
 app.post("/login", (req, res) => {
   const { username } = req.body;
