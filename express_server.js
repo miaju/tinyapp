@@ -110,14 +110,14 @@ app.get("/login", (req, res) => {
     user: userDatabase[req.cookies["user_id"]]
   };
 
-  res.render("urls_login", templateVars);
+  res.render("login", templateVars);
 });
 
 app.get("/register", (req, res) => {
   const templateVars = {
     user: userDatabase[req.cookies["user_id"]]
   };
-  res.render("urls_register", templateVars);
+  res.render("register", templateVars);
 });
 
 //--------------------------------------------- APP.POST:
