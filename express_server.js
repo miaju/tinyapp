@@ -3,6 +3,8 @@ const morgan = require("morgan");
 const cookieSession = require('cookie-session');
 const bcrypt = require("bcryptjs");
 
+const {generateRandomString, findUserByEmail, urlsForUser} = require("./helpers");
+
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -33,44 +35,6 @@ const urlDatabase = {
 
 const userDatabase = {};
 
-//------------------------------------------------- HELPER FUNCTIONS
-
-//generates a random string made of lower or uppercase letters or digits 0-9 of given length
-const generateRandomString = function(length) {
-  const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  let result = '';
-  for (let i = 0; i < length; i++) {
-    result += chars[Math.floor((chars.length * Math.random()))];
-  }
-
-  return result;
-};
-
-
-// finds user in userDatabase if user has matching email to the given email
-// returns the user object if user is found
-// returns null if user is not found
-const findUserByEmail = function(email) {
-  for (const user in userDatabase) {
-    if (userDatabase[user].email === email) {
-      return userDatabase[user];
-    }
-  }
-
-  return null;
-};
-
-const urlsForUser = function(id) {
-  let urls = {};
-
-  for (const url in urlDatabase) {
-    if (urlDatabase[url].userId === id) {
-      urls[url] = urlDatabase[url];
-    }
-  }
-
-  return urls;
-};
 
 
 //--------------------------------------- APP.GET :
@@ -93,7 +57,7 @@ app.get("/urls", (req, res) => {
   } else {
 
     const templateVars = {
-      urls: urlsForUser(userId),
+      urls: urlsForUser(userId, urlDatabase),
       user: userDatabase[userId]
     };
   
@@ -284,7 +248,7 @@ app.post("/urls/:id/edit", (req, res) => {
 //sets submitted username as the username cookie and redirects back to /urls
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
-  const user = findUserByEmail(email);
+  const user = findUserByEmail(email, userDatabase);
 
   if ((!user) || (!bcrypt.compare(user.password, password))) {
     return res.status(403).send("Invalid credentials");
@@ -316,7 +280,7 @@ app.post("/register", (req, res) => {
   if (!email || !password) {
     return res.status(400).send("Email or password cannot be blank");
   }
-  if (findUserByEmail(email)) {
+  if (findUserByEmail(email, userDatabase)) {
     return res.status(400).send("User with that email already exists");
   }
 
