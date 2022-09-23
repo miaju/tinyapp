@@ -39,6 +39,8 @@ const userDatabase = {};
 
 //--------------------------------------- APP.GET :
 
+//renders the home template
+//if user is logged in, sends user info to template
 app.get("/", (req, res) => {
   const templateVars = {
     user: userDatabase[req.session.user_id]
@@ -47,6 +49,9 @@ app.get("/", (req, res) => {
   res.render("home", templateVars);
 });
 
+//renders urls_index template
+//if user is logged in, sends user info to template
+//if user is not logged in sends unathorized error
 app.get("/urls", (req, res) => {
 
   const userId = req.session.user_id;
@@ -65,11 +70,10 @@ app.get("/urls", (req, res) => {
 
   }
 
-  
-
 });
 
 // redirects to long url that has id of id
+// if no url for that url id sends 404
 app.get("/u/:id", (req, res) => {
 
   if (!urlDatabase[req.params.id]) {
@@ -81,7 +85,9 @@ app.get("/u/:id", (req, res) => {
   
 });
 
-
+//renders urls_new template
+//if user is logged in, sends user info to template
+//if user is not logged in sends user to login page
 app.get("/urls/new", (req, res) => {
 
   const templateVars = {
@@ -99,6 +105,11 @@ app.get("/urls/new", (req, res) => {
   
 });
 
+
+//renders urls_show template
+//if user is logged in, sends user info to template
+//if user is not logged in sends unathorized error
+//if url id not found sends 404
 app.get("/urls/:id", (req, res) => {
   const userId = req.session.user_id;
   const templateVars = {
@@ -120,6 +131,11 @@ app.get("/urls/:id", (req, res) => {
 
 });
 
+
+//renders urls_edit template
+//if user is logged in, sends user info to template
+//if user is not logged in or not user that made the url sends unathorized error
+//if url id not found sends 404
 app.get("/urls/:id/edit", (req, res) => {
 
   const templateVars = {
@@ -139,6 +155,10 @@ app.get("/urls/:id/edit", (req, res) => {
   }
 });
 
+
+
+//renders login template
+//if already logged in redrects to /urls
 app.get("/login", (req, res) => {
   const templateVars = {
     user: userDatabase[req.session.user_id]
@@ -155,6 +175,9 @@ app.get("/login", (req, res) => {
   
 });
 
+
+//renders register template
+//if already logged in redrects to /urls
 app.get("/register", (req, res) => {
   const templateVars = {
     user: userDatabase[req.session.user_id]
