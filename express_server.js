@@ -232,7 +232,7 @@ app.post("/login", (req, res) => {
   res.redirect("/urls");
 });
 
-//clears the username cookie and redirects back to /urls
+//clears cookies and redirects back to home
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/");
