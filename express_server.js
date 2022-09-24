@@ -112,12 +112,7 @@ app.get("/urls/new", (req, res) => {
 //if url id not found sends 404
 app.get("/urls/:id", (req, res) => {
   const userId = req.session.user_id;
-  const templateVars = {
-    id: req.params.id,
-    longURL: urlDatabase[req.params.id].longURL,
-    user: userDatabase[userId]
-  };
-
+  
   if (!urlDatabase[req.params.id]) {
     return res.status(404).send("URL id not found");
     
@@ -125,6 +120,13 @@ app.get("/urls/:id", (req, res) => {
     return res.status(401).send("Unathorized to view this content.");
 
   } else {
+
+    const templateVars = {
+      id: req.params.id,
+      longURL: urlDatabase[req.params.id].longURL,
+      user: userDatabase[userId]
+    };
+
     res.render("urls_show", templateVars);
 
   }
@@ -138,11 +140,6 @@ app.get("/urls/:id", (req, res) => {
 //if url id not found sends 404
 app.get("/urls/:id/edit", (req, res) => {
 
-  const templateVars = {
-    id: req.params.id,
-    longURL: urlDatabase[req.params.id].longURL,
-    user: userDatabase[req.session.user_id]
-  };
   if (urlDatabase[req.params.id].userId !== req.session.user_id) {
     return res.status(401).send("Unathourized to do this action.");
 
@@ -150,6 +147,13 @@ app.get("/urls/:id/edit", (req, res) => {
     return res.status(404).send("URL id not found");
   
   } else {
+
+    const templateVars = {
+      id: req.params.id,
+      longURL: urlDatabase[req.params.id].longURL,
+      user: userDatabase[req.session.user_id]
+    };
+
     res.render("urls_edit", templateVars);
 
   }
@@ -252,15 +256,17 @@ app.post("/urls/:id/delete", (req, res) => {
 //changes the url assigned to the id to submitted url
 app.post("/urls/:id/edit", (req, res) => {
 
-  const templateVars = {
-    id: req.params.id,
-    longURL: urlDatabase[req.params.id].longURL,
-    user: userDatabase[req.session.user_id]
-  };
   if (urlDatabase[req.params.id].userId !== req.session.user_id) {
     return res.status(401).send("Unathorized to do this action.");
 
   } else {
+
+    const templateVars = {
+      id: req.params.id,
+      longURL: urlDatabase[req.params.id].longURL,
+      user: userDatabase[req.session.user_id]
+    };
+    
     res.render("urls_edit", templateVars);
 
   }
@@ -279,6 +285,7 @@ app.post("/login", (req, res) => {
 
   const userId = user.userId;
 
+  // eslint-disable-next-line camelcase
   req.session.user_id = userId;
   res.redirect("/urls");
 });
