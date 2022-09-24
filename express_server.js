@@ -273,7 +273,7 @@ app.post("/login", (req, res) => {
   const { email, password } = req.body;
   const user = findUserByEmail(email, userDatabase);
 
-  if ((!user) || (!bcrypt.compare(user.password, password))) {
+  if ((!user) || (!bcrypt.compareSync(password, user.password))) {
     return res.status(403).send("Invalid credentials");
   }
 
@@ -286,7 +286,7 @@ app.post("/login", (req, res) => {
 //clears the username cookie and redirects back to /urls
 app.post("/logout", (req, res) => {
 
-  req.session.user_id = null;
+  req.session = null;
   res.redirect("/");
 
 });
