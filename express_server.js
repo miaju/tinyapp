@@ -4,6 +4,7 @@ const cookieSession = require('cookie-session');
 const bcrypt = require("bcryptjs");
 
 const {generateRandomString, findUserByEmail, urlsForUser} = require("./helpers");
+const {urlDatabase, userDatabase} = require("./databases");
 
 const app = express();
 const PORT = 8080; // default port 8080
@@ -21,20 +22,6 @@ app.use(cookieSession({
 
 // set ejs as view engine
 app.set("view engine", "ejs");
-
-const urlDatabase = {
-  "b2xVn2": {
-    longURL: "http://www.lighthouselabs.ca",
-    userId: "pmade"
-  },
-  "9sm5xK": {
-    longURL: "http://www.google.com",
-    userId: "pmade"
-  }
-};
-
-const userDatabase = {};
-
 
 
 //--------------------------------------- APP.GET :
