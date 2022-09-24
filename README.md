@@ -23,3 +23,4 @@ This project was created by me as part of my learnings at Lighthouse Labs.
 - bcryptjs
 - cookie-session
 - morgan
+- nodemon
