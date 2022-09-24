@@ -48,9 +48,7 @@ app.get("/urls", (req, res) => {
   const userId = req.session.user_id;
 
   if (!userDatabase[userId]) {
-    return res
-      .status(401)
-      .send("Unathorized to view this content, please login.");
+    return res.status(401).send("Unathorized to view this content.");
   } else {
     const templateVars = {
       urls: urlsForUser(userId, urlDatabase),
