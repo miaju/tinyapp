@@ -8,7 +8,7 @@
       integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
       crossorigin="anonymous"
     />
-    <title>TinyApp - Edit URL</title>
+    <title>TinyApp - URL Page</title>
   </head>
 
   <body>
@@ -24,7 +24,8 @@
       <p>
         URL link: <a href="/u/<%= id %>">localhost:8080/u/<%= id %></a>
       </p>
-    <h4>Edit</h4>
+    <br />
+    <h5>Edit this URL:</h5>
     <form method="POST" action="/urls/<%= id %>" >
       <label for="longURL">Enter new URL:</label>
       <input
