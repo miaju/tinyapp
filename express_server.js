@@ -48,7 +48,9 @@ app.get("/urls", (req, res) => {
   const userId = req.session.user_id;
 
   if (!userDatabase[userId]) {
-    return res.status(401).send("Unathorized to view this content, you are not logged in.");
+    return res
+      .status(401)
+      .send("Unathorized to view this content, you are not logged in.");
   } else {
     const templateVars = {
       urls: urlsForUser(userId, urlDatabase),
@@ -95,9 +97,15 @@ app.get("/urls/:id", (req, res) => {
   if (!urlDatabase[id]) {
     return res.status(404).send("URL id not found");
   } else if (!userId) {
-    return res.status(401).send("Unathorized to view this content, please login.");
+    return res
+      .status(401)
+      .send("Unathorized to view this content, please login.");
   } else if (urlDatabase[id].userId !== userId) {
-    return res.status(401).send("Unathorized to do this action, you are not the creator of this URL.");
+    return res
+      .status(401)
+      .send(
+        "Unathorized to do this action, you are not the creator of this URL."
+      );
   } else {
     const templateVars = {
       id: req.params.id,
@@ -167,9 +175,15 @@ app.post("/urls/:id", (req, res) => {
   if (!urlDatabase[id]) {
     return res.status(404).send("URL id not found");
   } else if (!userId) {
-    return res.status(401).send("Unathorized to view this content, please login.");
+    return res
+      .status(401)
+      .send("Unathorized to view this content, please login.");
   } else if (urlDatabase[id].userId !== userId) {
-    return res.status(401).send("Unathorized to do this action, you are not the creator of this URL.");
+    return res
+      .status(401)
+      .send(
+        "Unathorized to do this action, you are not the creator of this URL."
+      );
   } else {
     urlDatabase[id] = {
       longURL,
@@ -182,14 +196,16 @@ app.post("/urls/:id", (req, res) => {
 
 //removes id from urlDatabase and redirects back to /urls
 app.post("/urls/:id/delete", (req, res) => {
-
   const userId = req.session.user_id;
   const id = req.params.id;
   if (!userId) {
     return res.status(401).send("Unathorized to do this action, please login.");
-
   } else if (urlDatabase[id].userId !== userId) {
-    return res.status(401).send("Unathorized to do this action, you are not the creator of this URL.");
+    return res
+      .status(401)
+      .send(
+        "Unathorized to do this action, you are not the creator of this URL."
+      );
   } else {
     delete urlDatabase[id];
     res.redirect("/urls");
@@ -202,9 +218,12 @@ app.post("/urls/:id/edit", (req, res) => {
   const id = req.params.id;
   if (!userId) {
     return res.status(401).send("Unathorized to do this action, please login.");
-
   } else if (urlDatabase[id].userId !== userId) {
-    return res.status(401).send("Unathorized to do this action, you are not the creator of this URL.");
+    return res
+      .status(401)
+      .send(
+        "Unathorized to do this action, you are not the creator of this URL."
+      );
   } else {
     const templateVars = {
       id,
