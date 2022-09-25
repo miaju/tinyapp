@@ -48,7 +48,7 @@ app.get("/urls", (req, res) => {
   const userId = req.session.user_id;
 
   if (!userDatabase[userId]) {
-    return res.status(401).send("Unathorized to view this content.");
+    return res.status(401).send("Unathorized to view this content, you are not logged in.");
   } else {
     const templateVars = {
       urls: urlsForUser(userId, urlDatabase),
@@ -90,15 +90,18 @@ app.get("/urls/new", (req, res) => {
 //if url id not found sends 404
 app.get("/urls/:id", (req, res) => {
   const userId = req.session.user_id;
+  const id = req.params.id;
 
-  if (!urlDatabase[req.params.id]) {
+  if (!urlDatabase[id]) {
     return res.status(404).send("URL id not found");
-  } else if (urlDatabase[req.params.id].userId !== userId) {
-    return res.status(401).send("Unathorized to view this content.");
+  } else if (!userId) {
+    return res.status(401).send("Unathorized to view this content, please login.");
+  } else if (urlDatabase[id].userId !== userId) {
+    return res.status(401).send("Unathorized to do this action, you are not the creator of this URL.");
   } else {
     const templateVars = {
       id: req.params.id,
-      longURL: urlDatabase[req.params.id].longURL,
+      longURL: urlDatabase[id].longURL,
       user: userDatabase[userId],
     };
 
@@ -138,7 +141,9 @@ app.get("/register", (req, res) => {
 
 // adds submitted url to urlDatabase with id randomly generated alphanumeric string
 app.post("/urls", (req, res) => {
-  if (!req.session.user_id) {
+  const userId = req.session.user_id;
+
+  if (!userId) {
     return res
       .status(401)
       .send("Unathourized to do this action, please log in");
@@ -146,7 +151,7 @@ app.post("/urls", (req, res) => {
     const short = generateRandomString(6);
     urlDatabase[short] = {
       longURL: req.body.longURL,
-      userId: req.session.user_id,
+      userId,
     };
 
     res.redirect(`/urls/${short}`); // redirect to /urls/:id
@@ -156,15 +161,19 @@ app.post("/urls", (req, res) => {
 // adds the id and url to the urlDatabase and redirects back to /urls
 app.post("/urls/:id", (req, res) => {
   const { longURL } = req.body;
+  const userId = req.session.user_id;
+  const id = req.params.id;
 
-  if (!req.session.user_id) {
-    return res
-      .status(401)
-      .send("Unathourized to do this action, please log in");
+  if (!urlDatabase[id]) {
+    return res.status(404).send("URL id not found");
+  } else if (!userId) {
+    return res.status(401).send("Unathorized to view this content, please login.");
+  } else if (urlDatabase[id].userId !== userId) {
+    return res.status(401).send("Unathorized to do this action, you are not the creator of this URL.");
   } else {
-    urlDatabase[req.params.id] = {
+    urlDatabase[id] = {
       longURL,
-      userId: req.session.user_id,
+      userId,
     };
 
     res.redirect("/urls");
@@ -173,23 +182,34 @@ app.post("/urls/:id", (req, res) => {
 
 //removes id from urlDatabase and redirects back to /urls
 app.post("/urls/:id/delete", (req, res) => {
-  if (urlDatabase[req.params.id].userId !== req.session.user_id) {
-    return res.status(401).send("Unathorized to do this action.");
+
+  const userId = req.session.user_id;
+  const id = req.params.id;
+  if (!userId) {
+    return res.status(401).send("Unathorized to do this action, please login.");
+
+  } else if (urlDatabase[id].userId !== userId) {
+    return res.status(401).send("Unathorized to do this action, you are not the creator of this URL.");
   } else {
-    delete urlDatabase[req.params.id];
+    delete urlDatabase[id];
     res.redirect("/urls");
   }
 });
 
 //changes the url assigned to the id to submitted url
 app.post("/urls/:id/edit", (req, res) => {
-  if (urlDatabase[req.params.id].userId !== req.session.user_id) {
-    return res.status(401).send("Unathorized to do this action.");
+  const userId = req.session.user_id;
+  const id = req.params.id;
+  if (!userId) {
+    return res.status(401).send("Unathorized to do this action, please login.");
+
+  } else if (urlDatabase[id].userId !== userId) {
+    return res.status(401).send("Unathorized to do this action, you are not the creator of this URL.");
   } else {
     const templateVars = {
-      id: req.params.id,
-      longURL: urlDatabase[req.params.id].longURL,
-      user: userDatabase[req.session.user_id],
+      id,
+      longURL: urlDatabase[id].longURL,
+      user: userDatabase[userId],
     };
 
     res.render("urls_show", templateVars);
@@ -202,7 +222,7 @@ app.post("/login", (req, res) => {
   const user = findUserByEmail(email, userDatabase);
 
   if (!user || !bcrypt.compareSync(password, user.password)) {
-    return res.status(403).send("Invalid credentials");
+    return res.status(403).send("Invalid credentials.");
   }
 
   const userId = user.userId;
@@ -227,10 +247,10 @@ app.post("/register", (req, res) => {
   const userId = generateRandomString(6);
 
   if (!email || !password) {
-    return res.status(400).send("Email or password cannot be blank");
+    return res.status(400).send("Email or password cannot be blank.");
   }
   if (findUserByEmail(email, userDatabase)) {
-    return res.status(400).send("User with that email already exists");
+    return res.status(400).send("User with that email already exists.");
   }
 
   userDatabase[userId] = {
