@@ -106,26 +106,6 @@ app.get("/urls/:id", (req, res) => {
   }
 });
 
-//renders urls_edit template
-//if user is logged in, sends user info to template
-//if user is not logged in or not user that made the url sends unathorized error
-//if url id not found sends 404
-app.get("/urls/:id/edit", (req, res) => {
-  if (urlDatabase[req.params.id].userId !== req.session.user_id) {
-    return res.status(401).send("Unathourized to do this action.");
-  } else if (!urlDatabase[req.params.id]) {
-    return res.status(404).send("URL id not found");
-  } else {
-    const templateVars = {
-      id: req.params.id,
-      longURL: urlDatabase[req.params.id].longURL,
-      user: userDatabase[req.session.user_id],
-    };
-
-    res.render("urls_edit", templateVars);
-  }
-});
-
 //renders login template
 //if already logged in redrects to /urls
 app.get("/login", (req, res) => {
@@ -212,7 +192,7 @@ app.post("/urls/:id/edit", (req, res) => {
       user: userDatabase[req.session.user_id],
     };
 
-    res.render("urls_edit", templateVars);
+    res.render("urls_show", templateVars);
   }
 });
 
@@ -242,8 +222,8 @@ app.post("/logout", (req, res) => {
 // if email or password fields left blank, sends status 400
 // if user with the given email exists, sends status 400
 app.post("/register", (req, res) => {
-  const { email } = req.body;
-  const password = bcrypt.hashSync(req.body.password, 10);
+  const { email, password } = req.body;
+  const hash = bcrypt.hashSync(password, 10);
   const userId = generateRandomString(6);
 
   if (!email || !password) {
@@ -256,7 +236,7 @@ app.post("/register", (req, res) => {
   userDatabase[userId] = {
     userId,
     email,
-    password,
+    password: hash,
   };
 
   // eslint-disable-next-line camelcase
